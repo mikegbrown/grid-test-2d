@@ -1,0 +1,22 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Controller\GridMovementController.cs">
+    <Files>
+      <File FileName="Assets\Scripts\Grid\Cell.cs" Line="64" Column="3" />
+      <File FileName="Assets\Scripts\Grid\GridSelector.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Pathfinding\Pathfinder.cs" Line="79" Column="8" />
+      <File FileName="Assets\Scripts\Controller\GridMovementController.cs" Line="74" Column="34" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="C:\Dev\Unity\GridTest2d\Assets\Scripts\Grid\GridManager.cs" line="86" />
+      <Breakpoint file="C:\Dev\Unity\GridTest2d\Assets\Scripts\Controller\GridMovementController.cs" line="156" />
+      <Breakpoint file="C:\Dev\Unity\GridTest2d\Assets\Scripts\Pathfinding\Pathfinder.cs" line="80" />
+      <Breakpoint file="C:\Dev\Unity\GridTest2d\Assets\Scripts\Controller\GridMovementController.cs" line="148" />
+      <Breakpoint file="C:\Dev\Unity\GridTest2d\Assets\Scripts\Pathfinding\Pathfinder.cs" line="25" />
+      <Breakpoint file="C:\Dev\Unity\GridTest2d\Assets\Scripts\Controller\GridMovementController.cs" line="130" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
