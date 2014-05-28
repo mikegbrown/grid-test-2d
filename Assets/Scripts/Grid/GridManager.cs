@@ -13,6 +13,7 @@ public class GridManager : MonoBehaviour
 
 	public bool					m_UpdateConnectionsOnStart = false;
 	public bool					m_CreateGridOnStart = false;
+	public bool					m_CreateGridXZ = false;
 	public GameObject			m_CellObject;
 	public GridType 			m_GridType;
 	public float				m_GridSpacing = 10.0f;
@@ -165,7 +166,21 @@ public class GridManager : MonoBehaviour
 			for( int y = 0; y < m_VerticalCells; y++ )
 			{
 				string cellName = string.Format( "Cell({0},{1})", x, y );
-				GameObject newCell = (GameObject)Instantiate( m_CellObject, m_origin + new Vector3((x * 1.0f) * m_GridSpacing, (y * 1.0f) * m_GridSpacing ), transform.rotation );
+
+				float xPos = (x * 1.0f) * m_GridSpacing;
+				float yPos = (y * 1.0f) * m_GridSpacing;
+
+				Vector3 spawnPos = m_CreateGridXZ ?
+					new Vector3( xPos, 0f, yPos ):
+						new Vector3( xPos, yPos, 0f );
+
+				GameObject newCell = (GameObject)Instantiate( m_CellObject, m_origin + spawnPos, transform.rotation );
+
+				if( m_CreateGridXZ )
+				{
+					newCell.transform.Rotate(new Vector3(1f,0f,0f), 90f );
+				}
+
 
 				newCell.name = cellName;
 				newCell.transform.parent = transform;
@@ -176,13 +191,18 @@ public class GridManager : MonoBehaviour
 			}
 		}
 	}
-	
+
 	private void UpdateClosestCellToMouse()
 	{
 		Vector3 mousePos = Input.mousePosition;
-		mousePos.z = 50.0f;
+
+		float test = m_CreateGridXZ ? Camera.main.transform.position.y - transform.position.y :
+										Camera.main.transform.position.z - transform.position.z;
+
+		mousePos.z = Mathf.Abs( test );
+
 		mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-		
+
 		m_closestToMouse = GetClosestCell( mousePos );
 	}
 
@@ -211,13 +231,23 @@ public class GridManager : MonoBehaviour
 
 			for (int x = 0; x < m_HorizontalCells; x++ )
 			{
-				//Debug.Log( m_GridSpacing * Mathf.Sin(60f) );
+				float xPos = ((x * 1.0f) * m_GridSpacing) + m_modifier;
+				float yPos = (y * 1.0f) * m_hexMod;
+				
+				Vector3 spawnPos = m_CreateGridXZ ?
+					new Vector3( xPos, 0f, yPos ):
+						new Vector3( xPos, yPos, 0f );
 
-				Vector3 newPosition = m_origin + new Vector3( ((x * 1.0f) * m_GridSpacing) + m_modifier, (y * 1.0f) * m_hexMod, 0f );
+				Vector3 newPosition = m_origin + spawnPos;
 
 				string cellName = string.Format( "Cell({0},{1})", x, y );
 				GameObject newCell = (GameObject)Instantiate( m_CellObject, newPosition, transform.rotation );
-				
+
+				if( m_CreateGridXZ )
+				{
+					newCell.transform.Rotate(new Vector3(1f,0f,0f), 90f );
+				}
+
 				newCell.name = cellName;
 				newCell.transform.parent = transform;
 				m_cells.Add( newCell );
