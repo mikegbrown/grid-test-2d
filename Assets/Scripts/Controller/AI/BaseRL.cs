@@ -1,22 +1,26 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent (typeof ( GridSelector ))]
 [RequireComponent (typeof ( Pathfinder   ))]
-public class GridMovementController : MonoBehaviour 
+public class BaseRL : MonoBehaviour 
 {
+
+	public GameObject 				m_target;
 	public float					m_MoveSpeed = 0.5f;
 
-	private GridSelector 			m_gridSelector;
-	private Pathfinder				m_pathfinder;
-	private Cell					m_currentCell;
-	
-	private bool					m_move = false;
+	private bool					m_move;
 	private bool					m_enabled = true;
-	private bool					m_isTurnBased = false;
 
+	private Pathfinder				m_pathfinder;
+	private GridSelector 			m_gridSelector;
+	private Cell					m_currentCell;
+	private Cell					m_targetCell;
+
+	private bool					m_isTurnBased;
 	private TurnBasedGameManager	m_turnBasedManager;
+
 	private List<Cell>				m_currentPath;
 
 	// Use this for initialization
@@ -25,7 +29,6 @@ public class GridMovementController : MonoBehaviour
 		m_pathfinder = (Pathfinder)transform.GetComponent<Pathfinder>();
 
 		m_gridSelector = (GridSelector)transform.GetComponent<GridSelector>();
-		m_gridSelector.cellSelectedDelegate = CellSelected;
 
 		m_currentCell = m_gridSelector.GetClosestCell( transform.position );
 		if( m_currentCell == null )
@@ -33,15 +36,31 @@ public class GridMovementController : MonoBehaviour
 			Debug.LogError("Grid Movement Controller is not close enough to grid. Teleporting to grid cell (0,0)");
 			m_currentCell = m_gridSelector.GetCellZero();
 		}
-
+		
 		transform.position = m_currentCell.transform.position;
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () 
-	{
-		if( m_enabled )
+	void FixedUpdate () {
+
+		if( m_target != null && m_enabled )
 		{
+			//TODO: Consider making "current cell" public knowledge so this can be more cheaply determined.
+			m_targetCell = m_gridSelector.GetClosestCell( m_target.transform.position );
+
+			List<Cell> path = m_pathfinder.GetPath( m_currentCell, m_targetCell );
+			m_currentPath = path;
+
+			//we don't want the AI trying to move onto the target.
+			m_currentPath.Remove( m_currentCell );
+			m_currentPath.Remove( m_targetCell );
+
+//			//TODO: Remove - as this is only for debugging.
+//			foreach( Cell pathCell in path )
+//			{
+//				pathCell.HighlightCell( Color.red, 0.5f, Cell.HighlightPriority.High);
+//			}
+
 			if( m_move )
 			{
 				float dist = Vector3.Distance( transform.position, m_currentCell.transform.position );
@@ -55,6 +74,7 @@ public class GridMovementController : MonoBehaviour
 						m_turnBasedManager.MemberActed(gameObject);
 						m_enabled = false;
 					}
+
 				}
 				else
 				{
@@ -75,31 +95,6 @@ public class GridMovementController : MonoBehaviour
 				}
 			}
 		}
-	}
-
-	private void CellSelected( Cell selectedCell )
-	{
-		if( m_currentCell.IsConnectedToCell( selectedCell ) )
-		{
-			//transform.position = selectedCell.transform.position;
-			if( selectedCell.m_CellType == Cell.CellType.Normal )
-			{
-				m_currentCell = selectedCell;
-				m_move = true;
-			}
-		}
-		else
-		{
-			List<Cell> path = m_pathfinder.GetPath( m_currentCell, selectedCell );
-
-			m_currentPath = path;
-
-			foreach( Cell pathCell in path )
-			{
-				pathCell.HighlightCell( Color.green, 0.5f, Cell.HighlightPriority.High);
-			}
-		}
-
 	}
 
 	public void SetEnabled( bool enabled )

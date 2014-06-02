@@ -107,6 +107,9 @@ public class Pathfinder : MonoBehaviour {
 			}
 		}
 
+		//reverse path so controllers read in correct direction from-to
+		path.Reverse();
+
 		return path;
 
 	}
