@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[ExecuteInEditMode]
 public class Cell : MonoBehaviour 
 {
 
@@ -127,6 +128,20 @@ public class Cell : MonoBehaviour
 				}
 			}
 
+		}
+	}
+
+	public void RemoveConnectedCell( GameObject gameObj )
+	{
+		m_connectedCells.Remove( gameObj );
+	}
+
+	public void OnDestroy() 
+	{
+		foreach( GameObject cellObj in m_connectedCells )
+		{
+			Cell cell = cellObj.GetComponent<Cell>();
+			cell.RemoveConnectedCell( gameObject );
 		}
 	}
 	
