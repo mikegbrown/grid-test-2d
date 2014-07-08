@@ -36,6 +36,9 @@ public class TurnBasedGameManager : MonoBehaviour
 		m_membersToAct = GenerateToActList();
 
 		EnableTeam( m_currentTeam );
+
+		//Register for events
+		Events.instance.AddListener<TurnCompletedEvent>( MemberActed );
 	}
 	
 	// Update is called once per frame
@@ -52,11 +55,11 @@ public class TurnBasedGameManager : MonoBehaviour
 		}
 	}
 
-	public void MemberActed( GameObject member )
+	public void MemberActed( TurnCompletedEvent e )
 	{
-		if( m_membersToAct.Contains( member ) )
+		if( m_membersToAct.Contains( e.TurnCompletedBy ) )
 		{
-			m_membersToAct.Remove( member );
+			m_membersToAct.Remove( e.TurnCompletedBy );
 		}
 		else
 		{
@@ -66,17 +69,8 @@ public class TurnBasedGameManager : MonoBehaviour
 
 	private void SetupTurnBased()
 	{
-		TurnBasedGameManager tbm = transform.GetComponent<TurnBasedGameManager>();
-
-		for( int i = 0; i < m_TeamA.Length; i++ )
-		{
-			m_TeamA[i].SendMessage("SetTurnBased", tbm, SendMessageOptions.RequireReceiver );
-		}
-
-		for( int i = 0; i < m_TeamB.Length; i++ )
-		{
-			m_TeamB[i].SendMessage("SetTurnBased", tbm, SendMessageOptions.RequireReceiver );
-		}
+		SetTurnBasedEvent e = new SetTurnBasedEvent( this );
+		Events.instance.Raise( e );
 	}
 
 	private void NextTeam()
