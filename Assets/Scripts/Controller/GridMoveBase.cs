@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public abstract class GridMoveBase : MonoBehaviour 
 {
 	public float					m_MoveSpeed = 0.5f;
+	public float					m_Gravity = 0.25f;
+	public float					m_HopSpeed = 0.6f;
 	
 	protected bool					m_move;
 	protected bool					m_enabled = true;
@@ -14,7 +16,9 @@ public abstract class GridMoveBase : MonoBehaviour
 	protected Cell					m_currentCell;
 
 	protected List<Cell>			m_currentPath;
-	
+
+	protected float					m_currYOffset;
+	protected Vector3 				m_currPos;
 	
 	protected void Initialize()
 	{
@@ -39,7 +43,7 @@ public abstract class GridMoveBase : MonoBehaviour
 		{	
 			if( m_move )
 			{
-				float dist = Vector3.Distance( transform.position, m_currentCell.transform.position );
+				float dist = Vector3.Distance( m_currPos, m_currentCell.transform.position );
 				if( dist < 0.1f )
 				{
 					transform.position = m_currentCell.transform.position;
@@ -55,6 +59,12 @@ public abstract class GridMoveBase : MonoBehaviour
 				else
 				{
 					Vector3 newPosition = Vector3.Lerp( transform.position, m_currentCell.transform.position,  m_MoveSpeed );
+					m_currPos = newPosition;
+
+					//apply gravity and hopspeed
+					newPosition.y += m_currYOffset;
+					m_currYOffset = Mathf.Clamp( m_currYOffset - m_Gravity, 0f, m_HopSpeed );
+
 					transform.position = newPosition;
 				}
 			}
@@ -65,6 +75,9 @@ public abstract class GridMoveBase : MonoBehaviour
 					if( m_currentPath.Count > 0 )
 					{
 						m_move = true;
+
+						m_currYOffset = m_HopSpeed;
+
 						m_currentCell = m_currentPath[0];
 						m_currentPath.Remove( m_currentPath[0] );
 					}

@@ -34,6 +34,7 @@ public class PlayerGridMove : GridMoveBase
 			{
 				m_currentCell = selectedCell;
 				m_move = true;
+				m_currYOffset = m_HopSpeed;
 			}
 		}
 		else
